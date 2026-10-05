@@ -1,0 +1,15 @@
+{
+	"required": true,
+	"package": "com.erikwigdahl.mirrorworld.client.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"client": [
+		"ExampleClientMixin",
+		"MirrorStonePortalMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}

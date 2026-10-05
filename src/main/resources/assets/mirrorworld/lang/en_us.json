@@ -1,0 +1,10 @@
+{
+    "item.mirrorworld.mirror_stone":  "Mirror Stone",
+    "message.mirrorworld.mirror_stone.wrong_dimension":  "Use the Mirror Stone in the Overworld or Mirror World.",
+    "message.mirrorworld.mirror_stone.busy":  "Dismount or leave your bed before teleporting.",
+    "message.mirrorworld.mirror_stone.missing_dimension":  "Mirror World is unavailable. Restart the server after installing the mod.",
+    "message.mirrorworld.mirror_stone.no_safe_position":  "No safe landing nearby. Try using the Mirror Stone from another location.",
+    "message.mirrorworld.mirror_stone.overworld":  "Overworld",
+    "message.mirrorworld.mirror_stone.mirror_world":  "Mirror World",
+    "message.mirrorworld.mirror_stone.cancelled":  "Mirror Stone teleport cancelled."
+}
