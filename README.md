@@ -1,6 +1,6 @@
-# mirrorWorld
+# Mirror World
 
-Adds a reusable **Mirror Stone** and a separate **Resource World** with vanilla
+Adds a reusable **Mirror Stone** and a separate **Mirror World** with vanilla
 Overworld terrain, biomes, ores, and structures. The dimension shares the save's
 world-generation seed, so terrain may match the Overworld, but its chunks and
 changes are stored separately. It does not automatically reset.
@@ -57,4 +57,4 @@ For setup instructions, please see the [Fabric Documentation page](https://docs.
 
 ## License
 
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
+This template is available under the MIT license. Feel free to learn from it and incorporate it in your own projects.
