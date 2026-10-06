@@ -1,0 +1,24 @@
+modLoader="javafml"
+loaderVersion="[1,)"
+license="MIT"
+[[mods]]
+modId="mirrorworld"
+version="${version}"
+displayName="Mirror World"
+authors="WiDuck1"
+iconFile="assets/mirrorworld/icon.png"
+description='''Travel between the Overworld and Mirror World using a craftable Mirror Stone.'''
+[[dependencies.mirrorworld]]
+modId="neoforge"
+type="required"
+versionRange="[26.2.0.88,)"
+ordering="NONE"
+side="BOTH"
+[[dependencies.mirrorworld]]
+modId="minecraft"
+type="required"
+versionRange="[26.2,26.3)"
+ordering="NONE"
+side="BOTH"
+[[mixins]]
+config="mirrorworld.client.mixins.json"

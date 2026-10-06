@@ -1,7 +1,7 @@
 package com.erikwigdahl.mirrorworld.client.mixin;
 
 import com.erikwigdahl.mirrorworld.MirrorWorld;
-import net.fabricmc.fabric.api.attachment.v1.AttachmentTarget;
+
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -39,7 +39,7 @@ public class MirrorStonePortalMixin {
     @Inject(method = "aiStep", at = @At("HEAD"))
     private void updateMirrorStoneEffect(CallbackInfo info) {
         LocalPlayer player = (LocalPlayer) (Object) this;
-        boolean charging = ((AttachmentTarget) player).getAttachedOrElse(MirrorWorld.MIRROR_CHARGING, false);
+        boolean charging = player.getData(MirrorWorld.MIRROR_CHARGING);
         if (charging && player.isAlive()) {
             if (mirrorStoneEffect == null) {
                 previousPortal = player.portalProcess;

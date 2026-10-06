@@ -17,16 +17,19 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.Vec3;
-import net.fabricmc.fabric.api.attachment.v1.AttachmentTarget;
-import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
-import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
+import net.neoforged.neoforge.attachment.IAttachmentHolder;
+import java.util.Optional;
+import java.util.function.Supplier;
+import net.neoforged.neoforge.attachment.AttachmentType;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.core.particles.ParticleTypes;
 
 public class MirrorStoneItem extends Item {
     private static final int CHARGE_TICKS = 80;
     // Transient state belongs to the player; it is never saved across disconnects or death.
-    private static final AttachmentType<Charge> CHARGE = AttachmentRegistry.create(MirrorWorld.id("mirror_charge"));
+    private static final Supplier<AttachmentType<Optional<Charge>>> CHARGE = MirrorWorld.ATTACHMENTS.register("mirror_charge",
+            () -> AttachmentType.builder(() -> Optional.<Charge>empty()).build());
+    static void registerAttachments() { }
 
     private record Charge(Vec3 start, ResourceKey<Level> dimension, InteractionHand hand,
                           ItemStack stack, long finishesAt) { }
@@ -44,22 +47,22 @@ public class MirrorStoneItem extends Item {
         if (!(player instanceof ServerPlayer serverPlayer)) return InteractionResult.SUCCESS;
         if (player.isPassenger() || player.isSleeping()) return fail(player, "busy");
 
-        AttachmentTarget attachments = (AttachmentTarget) serverPlayer;
-        if (attachments.getAttached(CHARGE) != null) return InteractionResult.SUCCESS;
-        attachments.setAttached(CHARGE, new Charge(player.position(), level.dimension(), hand,
-                player.getItemInHand(hand), level.getGameTime() + CHARGE_TICKS));
-        attachments.setAttached(MirrorWorld.MIRROR_CHARGING, true);
+        IAttachmentHolder attachments = (IAttachmentHolder) serverPlayer;
+        if (attachments.getData(CHARGE).orElse(null) != null) return InteractionResult.SUCCESS;
+        attachments.setData(CHARGE, Optional.of(new Charge(player.position(), level.dimension(), hand,
+                player.getItemInHand(hand), level.getGameTime() + CHARGE_TICKS)));
+        attachments.setData(MirrorWorld.MIRROR_CHARGING, true);
         return InteractionResult.SUCCESS;
     }
 
     public static void tickCharge(ServerPlayer player) {
-        AttachmentTarget attachments = (AttachmentTarget) player;
-        Charge charge = attachments.getAttached(CHARGE);
+        IAttachmentHolder attachments = (IAttachmentHolder) player;
+        Charge charge = attachments.getData(CHARGE).orElse(null);
         if (charge == null) return;
         if (!player.isAlive() || player.isPassenger() || player.isSleeping()
                 || !player.level().dimension().equals(charge.dimension())
                 || player.getItemInHand(charge.hand()) != charge.stack()
-                || !charge.stack().is(MirrorWorld.MIRROR_STONE)
+                || !charge.stack().is(MirrorWorld.MIRROR_STONE.get())
                 || player.position().distanceToSqr(charge.start()) > 0.0001) {
             clearCharge(player);
             player.sendOverlayMessage(Component.translatable("message.mirrorworld.mirror_stone.cancelled"));
@@ -77,9 +80,9 @@ public class MirrorStoneItem extends Item {
     }
 
     private static void clearCharge(ServerPlayer player) {
-        AttachmentTarget attachments = (AttachmentTarget) player;
-        attachments.removeAttached(CHARGE);
-        attachments.setAttached(MirrorWorld.MIRROR_CHARGING, false);
+        IAttachmentHolder attachments = (IAttachmentHolder) player;
+        attachments.removeData(CHARGE);
+        attachments.setData(MirrorWorld.MIRROR_CHARGING, false);
     }
 
     private static InteractionResult teleport(ServerPlayer serverPlayer, ItemStack stack) {
@@ -91,8 +94,8 @@ public class MirrorStoneItem extends Item {
                 returning ? Level.OVERWORLD : MirrorWorld.RESOURCE_WORLD);
         if (destination == null) return fail(player, "missing_dimension");
 
-        AttachmentTarget attachments = (AttachmentTarget) serverPlayer;
-        CompoundTag memories = attachments.getAttachedOrCreate(MirrorWorld.TRAVEL_POSITIONS).copy();
+        IAttachmentHolder attachments = (IAttachmentHolder) serverPlayer;
+        CompoundTag memories = attachments.getData(MirrorWorld.TRAVEL_POSITIONS).copy();
         // Preserve the Overworld return position from older compass versions.
         if (!memories.contains("overworld")) {
             CompoundTag legacy = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
@@ -125,7 +128,7 @@ public class MirrorStoneItem extends Item {
                 yaw, pitch, TeleportTransition.PLAY_PORTAL_SOUND));
         if (teleported == null) return InteractionResult.FAIL;
         memories.put(returning ? "resource_world" : "overworld", location);
-        ((AttachmentTarget) teleported).setAttached(MirrorWorld.TRAVEL_POSITIONS, memories);
+        ((IAttachmentHolder) teleported).setData(MirrorWorld.TRAVEL_POSITIONS, memories);
         teleported.resetFallDistance();
         teleported.getCooldowns().addCooldown(stack, 40);
         teleported.sendOverlayMessage(Component.translatable(

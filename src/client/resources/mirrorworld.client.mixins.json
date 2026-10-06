@@ -3,7 +3,7 @@
 	"package": "com.erikwigdahl.mirrorworld.client.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"client": [
-		"ExampleClientMixin",
+
 		"MirrorStonePortalMixin"
 	],
 	"injectors": {
