@@ -5,7 +5,7 @@ Overworld terrain, biomes, ores, and structures. The dimension shares the save's
 world-generation seed, so terrain may match the Overworld, but its chunks and
 changes are stored separately. It does not automatically reset.
 
-This version targets Minecraft **26.2** with Fabric and requires Java **25**.
+This version targets Minecraft **1.21.11** with Fabric and requires Java **21**.
 
 Craft the Mirror Stone in a crafting table:
 
@@ -50,7 +50,7 @@ and player travel attachments under that namespace are not automatically migrate
 Use a new test world for this version, or migrate an existing save before using it.
 
 Install the mod and Fabric API on both the client and server, then restart the
-world/server so the new dimension loads. Build with `./gradlew build` (Java 25);
+world/server so the new dimension loads. Build with `./gradlew build` (Java 21);
 the mod jar is `build/libs/mirrorworld-1.0.0.jar`.
 
 ## Setup

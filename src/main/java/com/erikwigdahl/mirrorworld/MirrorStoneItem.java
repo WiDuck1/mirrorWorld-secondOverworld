@@ -62,7 +62,7 @@ public class MirrorStoneItem extends Item {
                 || !charge.stack().is(MirrorWorld.MIRROR_STONE)
                 || player.position().distanceToSqr(charge.start()) > 0.0001) {
             clearCharge(player);
-            player.sendOverlayMessage(Component.translatable("message.mirrorworld.mirror_stone.cancelled"));
+            player.displayClientMessage(Component.translatable("message.mirrorworld.mirror_stone.cancelled"), true);
             // Prevent a held use button from immediately starting the charge again.
             player.getCooldowns().addCooldown(charge.stack(), 10);
             return;
@@ -128,8 +128,8 @@ public class MirrorStoneItem extends Item {
         ((AttachmentTarget) teleported).setAttached(MirrorWorld.TRAVEL_POSITIONS, memories);
         teleported.resetFallDistance();
         teleported.getCooldowns().addCooldown(stack, 40);
-        teleported.sendOverlayMessage(Component.translatable(
-                "message.mirrorworld.mirror_stone." + (returning ? "overworld" : "mirror_world")));
+        teleported.displayClientMessage(Component.translatable(
+                "message.mirrorworld.mirror_stone." + (returning ? "overworld" : "mirror_world")), true);
         return InteractionResult.SUCCESS;
     }
 
@@ -171,7 +171,7 @@ public class MirrorStoneItem extends Item {
     }
 
     private static InteractionResult fail(Player player, String reason) {
-        player.sendOverlayMessage(Component.translatable("message.mirrorworld.mirror_stone." + reason));
+        player.displayClientMessage(Component.translatable("message.mirrorworld.mirror_stone." + reason), true);
         return InteractionResult.FAIL;
     }
 }
