@@ -5,6 +5,8 @@ Overworld terrain, biomes, ores, and structures. The dimension shares the save's
 world-generation seed, so terrain may match the Overworld, but its chunks and
 changes are stored separately. It does not automatically reset.
 
+This version targets Minecraft **26.2** with Fabric and requires Java **25**.
+
 Craft the Mirror Stone in a crafting table:
 
 ```text
