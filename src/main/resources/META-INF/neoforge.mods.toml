@@ -11,13 +11,13 @@ description='''Travel between the Overworld and Mirror World using a craftable M
 [[dependencies.mirrorworld]]
 modId="neoforge"
 type="required"
-versionRange="[26.2.0.88,)"
+versionRange="[${neoforge_version},26.4)"
 ordering="NONE"
 side="BOTH"
 [[dependencies.mirrorworld]]
 modId="minecraft"
 type="required"
-versionRange="[26.2,26.3)"
+versionRange="[${minecraft_version}]"
 ordering="NONE"
 side="BOTH"
 [[mixins]]

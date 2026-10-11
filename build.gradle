@@ -3,8 +3,9 @@ plugins {
     id 'maven-publish'
 }
 
-base { archivesName = 'mirrorworld-neoforge-26.2' }
+base { archivesName = "mirrorworld-neoforge-${project.minecraft_version}" }
 java {
+    toolchain.languageVersion = JavaLanguageVersion.of(25)
     sourceCompatibility = JavaVersion.VERSION_25
     targetCompatibility = JavaVersion.VERSION_25
     withSourcesJar()
@@ -21,9 +22,10 @@ neoForge {
     mods { mirrorworld { sourceSet sourceSets.main } }
 }
 processResources {
-    def modVersion = project.version
-    inputs.property 'version', modVersion
-    filesMatching('META-INF/neoforge.mods.toml') { expand version: modVersion }
+    def metadata = [version: project.version, minecraft_version: project.minecraft_version,
+                    neoforge_version: project.neoforge_version]
+    inputs.properties metadata
+    filesMatching('META-INF/neoforge.mods.toml') { expand metadata }
 }
 jar { from('LICENSE') { rename { 'LICENSE_mirrorworld' } } }
 publishing { publications { mavenJava(MavenPublication) { from components.java } } }
