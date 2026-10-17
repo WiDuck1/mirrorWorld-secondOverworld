@@ -3,7 +3,7 @@ plugins {
     id 'maven-publish'
 }
 
-base { archivesName = 'mirrorworld-neoforge-26.2' }
+base { archivesName = "mirrorworld-neoforge-${project.minecraft_version}" }
 java {
     sourceCompatibility = JavaVersion.VERSION_25
     targetCompatibility = JavaVersion.VERSION_25

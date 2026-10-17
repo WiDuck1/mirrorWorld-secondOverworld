@@ -47,13 +47,13 @@ This replaces the old `eriks-test-mod1` namespace. Existing items, dimension dat
 and player travel attachments under that namespace are not automatically migrated.
 Use a new test world for this version, or migrate an existing save before using it.
 
-Install NeoForge 26.2.0.88 or newer for Minecraft 26.2 and this mod on both the client and server, then restart the
+Install NeoForge 26.1.2.122 or newer for Minecraft 26.1.2 and this mod on both the client and server, then restart the
 world/server so the new dimension loads. Build with `./gradlew build` (Java 25);
-the mod jar is `build/libs/mirrorworld-neoforge-26.2-1.0.0.jar`.
+the mod jar is `build/libs/mirrorworld-neoforge-26.1.2-1.0.0.jar`.
 
 ## Setup
 
-This branch targets Minecraft 26.2 with NeoForge and Java 25. Import the Gradle project into IntelliJ IDEA. Run `./gradlew runClient` or `./gradlew runServer` for development.
+This branch targets Minecraft 26.1.2 with NeoForge and Java 25. Import the Gradle project into IntelliJ IDEA. Run `./gradlew runClient` or `./gradlew runServer` for development.
 
 Travel positions are stored using NeoForge attachments. Existing Fabric player attachments are not automatically migrated; use a new test world when testing the port.
 
