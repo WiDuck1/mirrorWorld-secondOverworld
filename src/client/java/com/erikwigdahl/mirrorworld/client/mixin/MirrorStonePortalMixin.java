@@ -8,7 +8,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.PortalProcessor;
 import net.minecraft.world.level.block.Portal;
-import net.minecraft.world.level.portal.TeleportTransition;
+import net.minecraft.world.level.portal.DimensionTransition;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,7 +21,7 @@ public class MirrorStonePortalMixin {
     @Unique
     private static final Portal MIRROR_VISUAL_PORTAL = new Portal() {
         @Override
-        public TeleportTransition getPortalDestination(ServerLevel level, Entity entity, BlockPos position) {
+        public DimensionTransition getPortalDestination(ServerLevel level, Entity entity, BlockPos position) {
             return null;
         }
 

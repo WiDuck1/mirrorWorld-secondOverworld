@@ -1,0 +1,7 @@
+{
+  "required": true,
+  "package": "com.erikwigdahl.mirrorworld.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": ["GameTestDimensionsMixin"],
+  "injectors": {"defaultRequire": 1}
+}

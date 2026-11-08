@@ -2,7 +2,7 @@ package com.erikwigdahl.mirrorworld;
 
 import net.fabricmc.api.ModInitializer;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -31,7 +31,7 @@ public class MirrorWorld implements ModInitializer {
 			id("mirror_charging"), builder -> builder.initializer(() -> false)
 					.syncWith(ByteBufCodecs.BOOL, AttachmentSyncPredicate.targetOnly()));
 	public static final Item MIRROR_STONE = Registry.register(BuiltInRegistries.ITEM, id("mirror_stone"),
-			new MirrorStoneItem(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, id("mirror_stone"))).stacksTo(1)));
+			new MirrorStoneItem(new Item.Properties().stacksTo(1)));
 
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.
@@ -50,7 +50,7 @@ public class MirrorWorld implements ModInitializer {
 		LOGGER.info("Resource world and compass initialized");
 	}
 
-	public static Identifier id(String path) {
-		return Identifier.fromNamespaceAndPath(MOD_ID, path);
+	public static ResourceLocation id(String path) {
+		return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
 	}
 }

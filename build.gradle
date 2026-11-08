@@ -3,6 +3,10 @@ plugins {
 	id 'maven-publish'
 }
 
+base {
+	archivesName = "${project.name}-fabric-${project.minecraft_version}"
+}
+
 repositories {
 	// Add repositories to retrieve artifacts from in here.
 	// You should only use this when depending on other mods because
@@ -30,6 +34,14 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+}
+
+fabricApi {
+	configureTests {
+		createSourceSet = true
+		modId = 'mirrorworld-test'
+		enableClientGameTests = false
+	}
 }
 
 processResources {

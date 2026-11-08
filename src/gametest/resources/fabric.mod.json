@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "mirrorworld-test",
+  "version": "1.0.0",
+  "name": "Mirror World tests",
+  "environment": "server",
+  "mixins": ["mirrorworld.test.mixins.json"],
+  "entrypoints": {
+    "fabric-gametest": ["com.erikwigdahl.mirrorworld.MirrorStoneGameTest"]
+  },
+  "depends": {
+    "mirrorworld": "*",
+    "fabric-gametest-api-v1": "*"
+  }
+}
