@@ -13,14 +13,34 @@ java {
 tasks.withType(JavaCompile).configureEach { options.release = 21 }
 sourceSets.main.java.srcDir 'src/client/java'
 sourceSets.main.resources.srcDir 'src/client/resources'
+sourceSets {
+    gametest {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
 neoForge {
     version = project.neoforge_version
+    addModdingDependenciesTo sourceSets.gametest
+    mods {
+        mirrorworld { sourceSet sourceSets.main }
+        mirrorworld_test { sourceSet sourceSets.gametest }
+    }
     runs {
         client { client(); gameDirectory = file('run/neoforge-client') }
         server { server(); gameDirectory = file('run/neoforge-server'); programArgument '--nogui' }
+        gameTestServer {
+            type = 'gameTestServer'
+            sourceSet = sourceSets.gametest
+            gameDirectory = file('build/run/neoforge-gametest')
+            systemProperty 'neoforge.enabledGameTestNamespaces', 'mirrorworld_test'
+            loadedMods = [mods.mirrorworld, mods.mirrorworld_test]
+        }
     }
-    mods { mirrorworld { sourceSet sourceSets.main } }
+    runs.client.loadedMods = [mods.mirrorworld]
+    runs.server.loadedMods = [mods.mirrorworld]
 }
+tasks.named('check') { dependsOn 'runGameTestServer' }
 processResources {
     def modVersion = project.version
     inputs.property 'version', modVersion

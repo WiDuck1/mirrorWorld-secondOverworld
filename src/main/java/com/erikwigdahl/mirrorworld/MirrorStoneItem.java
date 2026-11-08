@@ -8,6 +8,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -15,7 +16,7 @@ import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.portal.TeleportTransition;
+import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import java.util.Optional;
@@ -39,20 +40,23 @@ public class MirrorStoneItem extends Item {
     }
 
     @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
         boolean returning = level.dimension().equals(MirrorWorld.RESOURCE_WORLD);
         if (!returning && !level.dimension().equals(Level.OVERWORLD)) {
-            return fail(player, "wrong_dimension");
+            return new InteractionResultHolder<>(fail(player, "wrong_dimension"), stack);
         }
-        if (!(player instanceof ServerPlayer serverPlayer)) return InteractionResult.SUCCESS;
-        if (player.isPassenger() || player.isSleeping()) return fail(player, "busy");
+        if (!(player instanceof ServerPlayer serverPlayer)) return InteractionResultHolder.success(stack);
+        if (player.isPassenger() || player.isSleeping()) {
+            return new InteractionResultHolder<>(fail(player, "busy"), stack);
+        }
 
         IAttachmentHolder attachments = (IAttachmentHolder) serverPlayer;
-        if (attachments.getData(CHARGE).orElse(null) != null) return InteractionResult.SUCCESS;
+        if (attachments.getData(CHARGE).isPresent()) return InteractionResultHolder.success(stack);
         attachments.setData(CHARGE, Optional.of(new Charge(player.position(), level.dimension(), hand,
-                player.getItemInHand(hand), level.getGameTime() + CHARGE_TICKS)));
+                stack, level.getGameTime() + CHARGE_TICKS)));
         attachments.setData(MirrorWorld.MIRROR_CHARGING, true);
-        return InteractionResult.SUCCESS;
+        return InteractionResultHolder.success(stack);
     }
 
     public static void tickCharge(ServerPlayer player) {
@@ -67,7 +71,7 @@ public class MirrorStoneItem extends Item {
             clearCharge(player);
             player.displayClientMessage(Component.translatable("message.mirrorworld.mirror_stone.cancelled"), true);
             // Prevent a held use button from immediately starting the charge again.
-            player.getCooldowns().addCooldown(charge.stack(), 10);
+            player.getCooldowns().addCooldown(charge.stack().getItem(), 10);
             return;
         }
         ServerLevel level = (ServerLevel) player.level();
@@ -99,19 +103,19 @@ public class MirrorStoneItem extends Item {
         // Preserve the Overworld return position from older compass versions.
         if (!memories.contains("overworld")) {
             CompoundTag legacy = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
-                    .copyTag().getCompoundOrEmpty("resource_compass_returns")
-                    .getCompoundOrEmpty(player.getUUID().toString());
+                    .copyTag().getCompound("resource_compass_returns")
+                    .getCompound(player.getUUID().toString());
             if (legacy.contains("x")) memories.put("overworld", legacy.copy());
         }
-        CompoundTag saved = memories.getCompoundOrEmpty(returning ? "overworld" : "resource_world");
+        CompoundTag saved = memories.getCompound(returning ? "overworld" : "resource_world");
         Vec3 target = null;
         if (saved.contains("x") && saved.contains("y") && saved.contains("z")) {
-            Vec3 remembered = new Vec3(saved.getDoubleOr("x", 0), saved.getDoubleOr("y", 0), saved.getDoubleOr("z", 0));
+            Vec3 remembered = new Vec3(saved.getDouble("x"), saved.getDouble("y"), saved.getDouble("z"));
             if (safe(destination, serverPlayer, remembered)) target = remembered;
         }
         BlockPos origin = saved.contains("x")
-                ? BlockPos.containing(saved.getDoubleOr("x", 0), 0, saved.getDoubleOr("z", 0))
-                : (returning ? destination.getRespawnData().pos() : player.blockPosition());
+                ? BlockPos.containing(saved.getDouble("x"), 0, saved.getDouble("z"))
+                : (returning ? destination.getSharedSpawnPos() : player.blockPosition());
         if (target == null) target = findSurface(destination, serverPlayer, origin);
         if (target == null) return fail(player, "no_safe_position");
 
@@ -122,15 +126,15 @@ public class MirrorStoneItem extends Item {
         location.putDouble("z", departure.z);
         location.putFloat("yaw", player.getYRot());
         location.putFloat("pitch", player.getXRot());
-        float yaw = saved.getFloatOr("yaw", player.getYRot());
-        float pitch = saved.getFloatOr("pitch", player.getXRot());
-        ServerPlayer teleported = serverPlayer.teleport(new TeleportTransition(destination, target, Vec3.ZERO,
-                yaw, pitch, TeleportTransition.PLAY_PORTAL_SOUND));
-        if (teleported == null) return InteractionResult.FAIL;
+        float yaw = saved.contains("yaw") ? saved.getFloat("yaw") : player.getYRot();
+        float pitch = saved.contains("pitch") ? saved.getFloat("pitch") : player.getXRot();
+        var entity = serverPlayer.changeDimension(new DimensionTransition(destination, target, Vec3.ZERO,
+                yaw, pitch, DimensionTransition.PLAY_PORTAL_SOUND));
+        if (!(entity instanceof ServerPlayer teleported)) return InteractionResult.FAIL;
         memories.put(returning ? "resource_world" : "overworld", location);
         ((IAttachmentHolder) teleported).setData(MirrorWorld.TRAVEL_POSITIONS, memories);
         teleported.resetFallDistance();
-        teleported.getCooldowns().addCooldown(stack, 40);
+        teleported.getCooldowns().addCooldown(stack.getItem(), 40);
         teleported.displayClientMessage(Component.translatable(
                 "message.mirrorworld.mirror_stone." + (returning ? "overworld" : "mirror_world")), true);
         return InteractionResult.SUCCESS;

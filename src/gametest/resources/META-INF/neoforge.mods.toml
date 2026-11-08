@@ -1,0 +1,9 @@
+modLoader="javafml"
+loaderVersion="[1,)"
+license="MIT"
+[[mods]]
+modId="mirrorworld_test"
+version="1.0.0"
+displayName="Mirror World tests"
+[[mixins]]
+config="mirrorworld.test.mixins.json"

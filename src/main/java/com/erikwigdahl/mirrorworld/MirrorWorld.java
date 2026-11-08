@@ -1,9 +1,10 @@
 package com.erikwigdahl.mirrorworld;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -25,11 +26,11 @@ public class MirrorWorld {
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENTS = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, MOD_ID);
     public static final Supplier<AttachmentType<CompoundTag>> TRAVEL_POSITIONS = ATTACHMENTS.register("travel_positions",
-            () -> AttachmentType.builder(() -> new CompoundTag()).serialize(CompoundTag.CODEC.fieldOf("positions")).copyOnDeath().build());
+            () -> AttachmentType.builder(() -> new CompoundTag()).serialize(CompoundTag.CODEC.fieldOf("positions").codec()).copyOnDeath().build());
     public static final Supplier<AttachmentType<Boolean>> MIRROR_CHARGING = ATTACHMENTS.register("mirror_charging",
             () -> AttachmentType.builder(() -> false).sync((holder, player) -> holder == player, ByteBufCodecs.BOOL).build());
     public static final DeferredItem<MirrorStoneItem> MIRROR_STONE = ITEMS.registerItem("mirror_stone", MirrorStoneItem::new,
-            properties -> properties.stacksTo(1));
+            new Item.Properties().stacksTo(1));
 
     public MirrorWorld(IEventBus modBus) {
         MirrorStoneItem.registerAttachments();
@@ -44,5 +45,5 @@ public class MirrorWorld {
     private static void tick(ServerTickEvent.Post event) {
         event.getServer().getPlayerList().getPlayers().forEach(MirrorStoneItem::tickCharge);
     }
-    public static Identifier id(String path) { return Identifier.fromNamespaceAndPath(MOD_ID, path); }
+    public static ResourceLocation id(String path) { return ResourceLocation.fromNamespaceAndPath(MOD_ID, path); }
 }
